@@ -2,6 +2,7 @@ package bzh.duncan.loans.controller;
 
 import bzh.duncan.loans.constants.LoansConstants;
 import bzh.duncan.loans.dto.ErrorResponseDto;
+import bzh.duncan.loans.dto.LoansContactInfoDto;
 import bzh.duncan.loans.dto.LoansDto;
 import bzh.duncan.loans.dto.ResponseDto;
 import bzh.duncan.loans.service.ILoansService;
@@ -14,6 +15,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +31,9 @@ import org.springframework.web.bind.annotation.*;
 @AllArgsConstructor
 @Validated
 public class LoansController {
+
+    @Autowired
+    private LoansContactInfoDto loansContactInfoDto;
 
     private ILoansService iLoansService;
 
@@ -158,6 +163,32 @@ public class LoansController {
                     .status(HttpStatus.EXPECTATION_FAILED)
                     .body(new ResponseDto(LoansConstants.STATUS_417, LoansConstants.MESSAGE_417_DELETE));
         }
+    }
+
+    @Operation(
+            summary = "Get Contact Info",
+            description = "Get the contact information of the application"
+    )
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "HTTP Status OK"
+                    ),
+                    @ApiResponse(
+                            responseCode = "500",
+                            description = "HTTP Status Internal Server Error",
+                            content = @Content(
+                                    schema = @Schema(implementation = ErrorResponseDto.class)
+                            )
+                    )
+            }
+    )
+    @GetMapping("/contact-info")
+    public ResponseEntity<LoansContactInfoDto> getContactInfo(){
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(loansContactInfoDto);
     }
 
 }
